@@ -66,7 +66,8 @@ context.
    argument ending in `.md` is the minutes file (optional), everything else is the
    recording.
    - Recording: normally lives in `meetings/.audio/`; an explicit path is fine. If the
-     file is missing — ask to put it there and stop.
+     file is missing — create `meetings/.audio/` if it doesn't exist (empty gitignored
+     folders don't survive a fresh clone), ask to put the recording there and stop.
    - Minutes file: use the path as given, else `meetings/<name>`, else search by
      basename under `meetings/`; ambiguous/not found — ask, don't create silently.
 2. **Transcribe**: `${CLAUDE_SKILL_DIR}/scripts/meeting.py transcribe <recording-path>`.

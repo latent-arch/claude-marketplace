@@ -22,7 +22,10 @@ SKILL.md); frontmatter keys and enum values stay in English exactly as in the te
    "`meeting-note` template" section (the template below with section headings and
    placeholder text translated into the working language) + a "Meetings index" section
    with an empty table `| Date | Type | Topic | Status | File |` (headers translated).
-2. Add to the repo's `.gitignore` (create it if absent), with the comment in the
+2. Create the service folders: `mkdir -p meetings/.audio meetings/.transcripts`. They
+   are gitignored (next step), so they exist only locally — tell the user that
+   recordings go into `meetings/.audio/`.
+3. Add to the repo's `.gitignore` (create it if absent), with the comment in the
    working language:
 
    ```
