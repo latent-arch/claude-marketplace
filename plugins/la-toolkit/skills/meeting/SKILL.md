@@ -72,10 +72,13 @@ context.
      basename under `meetings/`; ambiguous/not found — ask, don't create silently.
 2. **Transcribe**: `${CLAUDE_SKILL_DIR}/scripts/meeting.py transcribe <recording-path>`.
    The language is auto-detected; pass `--language xx` if it's known upfront (skips
-   detection and avoids misdetection on noisy audio). The first run is long (venv +
-   ~3 GB model); on CPU an hour-long meeting takes tens of minutes, so run it **in the
-   background** and wait for completion. The transcript appears in
-   `meetings/.transcripts/<recording-name>.md`.
+   detection and avoids misdetection on noisy audio). **First run**: if the script's
+   venv (`~/.cache/meeting-skill/venv`, or `$MEETING_VENV` if set) doesn't exist yet,
+   tell the user before starting that this is a one-time setup — dependencies and the
+   ~3 GB Whisper model will be downloaded, so this first transcription takes noticeably
+   longer; subsequent runs skip all of this. Beyond setup, on CPU an hour-long meeting
+   takes tens of minutes, so run the script **in the background** and wait for
+   completion. The transcript appears in `meetings/.transcripts/<recording-name>.md`.
 3. **Read the transcript, build the roster**: participants — from the minutes file
    (`participants`) or ask. Attribute utterances/tasks by context; where unclear —
    don't invent an author, record it as an open question.
