@@ -84,6 +84,7 @@ The skill's single tool; run it from the target repo root:
 ```bash
 ${CLAUDE_SKILL_DIR}/scripts/meeting.py transcribe <recording> [--language ru] [--model large-v3] [--out PATH]
 ${CLAUDE_SKILL_DIR}/scripts/meeting.py lint <minutes-file.md> [...]
+${CLAUDE_SKILL_DIR}/scripts/meeting.py check-setup [--model large-v3]
 ```
 
 - `transcribe` — recording (webm/mp4/mkv/audio) → transcript `[HH:MM:SS] text` in
@@ -93,6 +94,11 @@ ${CLAUDE_SKILL_DIR}/scripts/meeting.py lint <minutes-file.md> [...]
   labeled.
 - `lint` — checks the minutes' YAML frontmatter (required fields, `meeting_type`,
   `status`, dates, list-typed fields). Exit code 0/1.
+- `check-setup` — fast dependency-free probe of the one-time setup: reports whether the
+  managed venv and the Whisper model cache are in place. Exit 0 — ready; 1 — first run
+  pending (the next `transcribe` will install dependencies and/or download the ~3 GB
+  model — warn the user). The venv alone is not a reliable signal: `lint` bootstraps it
+  without ever pulling the model.
 
 The script sets up its own environment: on first run it creates a venv in
 `~/.cache/meeting-skill/venv` (override: `$MEETING_VENV`) and installs the dependencies

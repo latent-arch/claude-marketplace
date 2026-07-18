@@ -70,15 +70,16 @@ context.
      folders don't survive a fresh clone), ask to put the recording there and stop.
    - Minutes file: use the path as given, else `meetings/<name>`, else search by
      basename under `meetings/`; ambiguous/not found — ask, don't create silently.
-2. **Transcribe**: `${CLAUDE_SKILL_DIR}/scripts/meeting.py transcribe <recording-path>`.
-   The language is auto-detected; pass `--language xx` if it's known upfront (skips
-   detection and avoids misdetection on noisy audio). **First run**: if the script's
-   venv (`~/.cache/meeting-skill/venv`, or `$MEETING_VENV` if set) doesn't exist yet,
-   tell the user before starting that this is a one-time setup — dependencies and the
-   ~3 GB Whisper model will be downloaded, so this first transcription takes noticeably
-   longer; subsequent runs skip all of this. Beyond setup, on CPU an hour-long meeting
-   takes tens of minutes, so run the script **in the background** and wait for
-   completion. The transcript appears in `meetings/.transcripts/<recording-name>.md`.
+2. **Transcribe**: first run `${CLAUDE_SKILL_DIR}/scripts/meeting.py check-setup`
+   (fast, no side effects). If it exits non-zero, tell the user before starting that
+   this is a one-time setup — dependencies and the ~3 GB Whisper model will be
+   downloaded, so this first transcription takes noticeably longer; subsequent runs
+   skip all of this. Then `${CLAUDE_SKILL_DIR}/scripts/meeting.py transcribe
+   <recording-path>`. The language is auto-detected; pass `--language xx` if it's known
+   upfront (skips detection and avoids misdetection on noisy audio). Beyond setup, on
+   CPU an hour-long meeting takes tens of minutes, so run the script **in the
+   background** and wait for completion. The transcript appears in
+   `meetings/.transcripts/<recording-name>.md`.
 3. **Read the transcript, build the roster**: participants — from the minutes file
    (`participants`) or ask. Attribute utterances/tasks by context; where unclear —
    don't invent an author, record it as an open question.

@@ -4,6 +4,7 @@
 Subcommands:
     transcribe <recording> [options]   — meeting recording (webm/mp4/mkv/audio) → text transcript
     lint <file.md> [...]               — check the minutes' YAML frontmatter (type: meeting-note)
+    check-setup [--model X]            — is the one-time setup (venv + model) done? exit 0/1
 
 The transcribe pipeline (local, CPU-only, the recording never leaves the machine):
   1. audio extraction — the input (incl. Yandex Telemost `.webm` video) is decoded
@@ -180,6 +181,38 @@ def cmd_transcribe(args: argparse.Namespace) -> int:
     return 0
 
 
+# ── check-setup ──────────────────────────────────────────────────────────────
+
+def model_cache_dir(model_name: str) -> Path:
+    """HF hub cache folder where faster-whisper stores the model."""
+    repo = model_name if "/" in model_name else f"Systran/faster-whisper-{model_name}"
+    hub = Path(
+        os.environ.get("HF_HUB_CACHE")
+        or Path(os.environ.get("HF_HOME") or Path.home() / ".cache" / "huggingface") / "hub"
+    )
+    return hub / ("models--" + repo.replace("/", "--"))
+
+
+def cmd_check_setup(args: argparse.Namespace) -> int:
+    """Fast dependency-free probe: has the one-time setup already happened?
+
+    The venv alone is not a valid signal — lint bootstraps the same venv without
+    ever pulling the Whisper model, and the ~3 GB model download is what the user
+    must be warned about before the first transcribe.
+    """
+    venv_ok = (VENV / "bin" / "python").exists()
+    mdir = model_cache_dir(args.model)
+    # a snapshot symlink to model.bin appears only after the download completes
+    model_ok = any(mdir.glob("snapshots/*/model.bin"))
+    print(f"venv ({VENV}): {'ok' if venv_ok else 'missing'}")
+    print(f"model {args.model} ({mdir}): {'ok' if model_ok else 'missing'}")
+    if venv_ok and model_ok:
+        print("✓ setup complete — transcribe will start right away")
+        return 0
+    print("✗ first run pending: the next transcribe will install dependencies and/or download the ~3 GB model")
+    return 1
+
+
 # ── lint ─────────────────────────────────────────────────────────────────────
 
 # Required frontmatter fields of a meeting minutes file (template — meetings/README.md).
@@ -293,6 +326,10 @@ def main(argv: list[str]) -> int:
     l = sub.add_parser("lint", help="check the minutes' frontmatter (type: meeting-note)")
     l.add_argument("files", nargs="+", help="minutes .md files")
     l.set_defaults(fn=cmd_lint)
+
+    c = sub.add_parser("check-setup", help="is the one-time setup (venv + Whisper model) done? exit 0/1")
+    c.add_argument("--model", default="large-v3", help="Whisper model to check the cache for (default: large-v3)")
+    c.set_defaults(fn=cmd_check_setup)
 
     args = p.parse_args(argv)
     return args.fn(args)
