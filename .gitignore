@@ -1,0 +1,2 @@
+# Python bytecode cache (e.g. from running skill scripts locally)
+__pycache__/

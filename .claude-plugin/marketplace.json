@@ -1,0 +1,12 @@
+{
+  "name": "latent-arch",
+  "description": "Latent Arch plugin marketplace for Claude Code",
+  "owner": { "name": "Denis Ilguzin" },
+  "plugins": [
+    {
+      "name": "la-toolkit",
+      "source": "./plugins/la-toolkit",
+      "description": "Latent Arch general-purpose toolkit for Claude Code"
+    }
+  ]
+}

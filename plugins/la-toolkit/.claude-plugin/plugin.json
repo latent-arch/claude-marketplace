@@ -1,0 +1,6 @@
+{
+  "name": "la-toolkit",
+  "description": "Latent Arch general-purpose toolkit for Claude Code",
+  "version": "0.1.0",
+  "author": { "name": "Denis Ilguzin" }
+}
